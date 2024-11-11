@@ -11,7 +11,7 @@ import ru.quipy.streams.annotation.SubscribeEvent
 
 @Service
 @AggregateSubscriber(
-    aggregateClass = UserAggregate::class, subscriberName = "user-events-subscriber"
+    aggregateClass = UserAggregate::class, subscriberName = "user-subs-stream"
 )
 class AnnotationBasedUserEventsSubscriber {
 

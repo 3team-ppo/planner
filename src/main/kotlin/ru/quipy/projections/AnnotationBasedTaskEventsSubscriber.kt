@@ -14,7 +14,7 @@ import ru.quipy.streams.annotation.SubscribeEvent
 
 @Service
 @AggregateSubscriber(
-    aggregateClass = TaskAggregate::class, subscriberName = "task-events-subscriber"
+    aggregateClass = TaskAggregate::class, subscriberName = "task-subs-stream"
 )
 class AnnotationBasedTaskEventsSubscriber {
 

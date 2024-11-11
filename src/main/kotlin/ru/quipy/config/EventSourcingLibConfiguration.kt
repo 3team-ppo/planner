@@ -26,10 +26,13 @@ class EventSourcingLibConfiguration {
 
     @Autowired
     private lateinit var projectEventSubscriber: AnnotationBasedProjectEventsSubscriber
+
     @Autowired
     private lateinit var statusEventSubscriber: AnnotationBasedStatusEventsSubscriber
+
     @Autowired
     private lateinit var taskEventSubscriber: AnnotationBasedTaskEventsSubscriber
+
     @Autowired
     private lateinit var userEventSubscriber: AnnotationBasedUserEventsSubscriber
 

@@ -11,7 +11,7 @@ import ru.quipy.streams.annotation.SubscribeEvent
 
 @Service
 @AggregateSubscriber(
-    aggregateClass = StatusAggregate::class, subscriberName = "status-events-subscriber"
+    aggregateClass = StatusAggregate::class, subscriberName = "status-subs-stream"
 )
 class AnnotationBasedStatusEventsSubscriber {
 

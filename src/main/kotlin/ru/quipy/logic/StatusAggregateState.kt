@@ -12,6 +12,7 @@ class StatusAggregateState : AggregateState<UUID, StatusAggregate> {
     lateinit var color: String
     var createdAt: Long = System.currentTimeMillis()
     var updatedAt: Long = System.currentTimeMillis()
+    private val assignedTasks = mutableListOf<UUID>()  // Track assigned tasks
 
     override fun getId() = statusId
 
@@ -32,6 +33,12 @@ class StatusAggregateState : AggregateState<UUID, StatusAggregate> {
         }
         name = event.newStatusName
         color = event.newColor
+        updatedAt = event.createdAt
+    }
+
+    @StateTransitionFunc
+    fun statusAssignedToTaskApply(event: StatusAssignedToTaskEvent) {
+        assignedTasks.add(event.taskId)
         updatedAt = event.createdAt
     }
 }
