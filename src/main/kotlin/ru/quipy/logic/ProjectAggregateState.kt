@@ -12,8 +12,9 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     var updatedAt: Long = System.currentTimeMillis()
 
     lateinit var projectTitle: String
-    lateinit var creatorId: String
+    lateinit var creatorId: UUID
     var tasks = mutableMapOf<UUID, TaskEntity>()
+    var participants = mutableListOf<UUID>()
     var projectTags = mutableMapOf<UUID, TagEntity>()
 
     override fun getId() = projectId
@@ -24,6 +25,7 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
         projectId = event.projectId
         projectTitle = event.title
         creatorId = event.creatorId
+        participants.add(element = event.creatorId)
         updatedAt = createdAt
     }
 

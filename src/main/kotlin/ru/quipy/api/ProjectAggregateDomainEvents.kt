@@ -14,7 +14,7 @@ const val TASK_CREATED_EVENT = "TASK_CREATED_EVENT"
 class ProjectCreatedEvent(
     val projectId: UUID,
     val title: String,
-    val creatorId: String,
+    val creatorId: UUID,
     createdAt: Long = System.currentTimeMillis(),
 ) : Event<ProjectAggregate>(
     name = PROJECT_CREATED_EVENT,

@@ -22,12 +22,12 @@ class ProjectController(
 ) {
 
     @PostMapping("/{projectTitle}")
-    fun createProject(@PathVariable projectTitle: String, @RequestParam creatorId: String) : ProjectCreatedEvent {
+    fun createProject(@PathVariable projectTitle: String, @RequestParam creatorId: UUID) : ProjectCreatedEvent {
         return projectEsService.create { it.create(UUID.randomUUID(), projectTitle, creatorId) }
     }
 
     @GetMapping("/{projectId}")
-    fun getAccount(@PathVariable projectId: UUID) : ProjectAggregateState? {
+    fun getProject(@PathVariable projectId: UUID) : ProjectAggregateState? {
         return projectEsService.getState(projectId)
     }
 
