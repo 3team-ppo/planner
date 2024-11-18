@@ -36,7 +36,6 @@ class StatusUpdatedEvent(
 
 @DomainEvent(name = STATUS_DELETED_EVENT)
 class StatusDeletedEvent(
-    val projectId: UUID,
     val statusId: UUID,
     createdAt: Long = System.currentTimeMillis(),
 ) : Event<StatusAggregate>(

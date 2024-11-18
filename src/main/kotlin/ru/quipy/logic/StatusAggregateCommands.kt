@@ -36,7 +36,6 @@ fun StatusAggregateState.deleteStatus(): StatusDeletedEvent {
         throw IllegalStateException("Status ID is not initialized")
     }
     return StatusDeletedEvent(
-        projectId = this.projectId,
         statusId = this.getId()
     )
 }
