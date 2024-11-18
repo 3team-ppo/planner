@@ -1,7 +1,9 @@
 package ru.quipy.logic
 
-import ru.quipy.api.*
-import java.util.*
+import ru.quipy.api.StatusCreatedEvent
+import ru.quipy.api.StatusDeletedEvent
+import ru.quipy.api.StatusUpdatedEvent
+import java.util.UUID
 
 fun StatusAggregateState.createStatus(
     statusName: String,
@@ -28,13 +30,13 @@ fun StatusAggregateState.updateStatus(newStatusName: String, newColor: String, p
     )
 }
 
-fun StatusAggregateState.assignStatusToTask(taskId: UUID, projectId: UUID): StatusAssignedToTaskEvent {
+
+fun StatusAggregateState.deleteStatus(): StatusDeletedEvent {
     if (this.getId() == UUID(0, 0)) {
         throw IllegalStateException("Status ID is not initialized")
     }
-    return StatusAssignedToTaskEvent(
-        projectId = projectId,
-        taskId = taskId,
+    return StatusDeletedEvent(
+        projectId = this.projectId,
         statusId = this.getId()
     )
 }

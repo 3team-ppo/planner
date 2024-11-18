@@ -6,6 +6,7 @@ import java.util.*
 
 const val STATUS_CREATED_EVENT = "STATUS_CREATED_EVENT"
 const val STATUS_UPDATED_EVENT = "STATUS_UPDATED_EVENT"
+const val STATUS_DELETED_EVENT = "STATUS_UPDATED_EVENT"
 const val STATUS_ASSIGNED_TO_TASK_EVENT = "STATUS_ASSIGNED_TO_TASK_EVENT"
 
 // API
@@ -30,6 +31,16 @@ class StatusUpdatedEvent(
     createdAt: Long = System.currentTimeMillis(),
 ) : Event<StatusAggregate>(
     name = STATUS_UPDATED_EVENT,
+    createdAt = createdAt,
+)
+
+@DomainEvent(name = STATUS_DELETED_EVENT)
+class StatusDeletedEvent(
+    val projectId: UUID,
+    val statusId: UUID,
+    createdAt: Long = System.currentTimeMillis(),
+) : Event<StatusAggregate>(
+    name = STATUS_DELETED_EVENT,
     createdAt = createdAt,
 )
 

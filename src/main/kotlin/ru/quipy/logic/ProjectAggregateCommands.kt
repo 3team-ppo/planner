@@ -1,5 +1,6 @@
 package ru.quipy.logic
 
+import ru.quipy.api.ParticipantAddedEvent
 import ru.quipy.api.ProjectCreatedEvent
 import ru.quipy.api.TagAssignedToTaskEvent
 import ru.quipy.api.TagCreatedEvent
@@ -39,4 +40,11 @@ fun ProjectAggregateState.assignTagToTask(tagId: UUID, taskId: UUID): TagAssigne
     }
 
     return TagAssignedToTaskEvent(projectId = this.getId(), tagId = tagId, taskId = taskId)
+}
+
+fun ProjectAggregateState.addParticipantById(userId: UUID): ParticipantAddedEvent {
+    if (participants.contains(userId))
+        throw IllegalArgumentException("User $userId is already a participant of the project ${getId()}.")
+
+    return ParticipantAddedEvent(projectId = getId(), userId = userId)
 }

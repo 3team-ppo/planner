@@ -22,14 +22,11 @@ class ProjectControllerTests {
     @Test
     fun createProject_ProjectCreatedWithCorrectFieldsAndCreatedAsParticipant() {
         val owner = createUser("ulyana")
-        val project = projectController.createProject(
-            "theBestProject",
-            owner.userId
-        )
+        val project = createProject(owner)
         Assertions.assertEquals(1, project.version)
-        Assertions.assertEquals("project", project.title)
+        Assertions.assertEquals("theBestProject", project.title)
 
-        var gotProject = projectController.getProject(project.projectId)
+        val gotProject = projectController.getProject(project.projectId)
         Assertions.assertNotNull(gotProject)
 
         val ownerInProject = gotProject!!.participants.firstOrNull() { it == owner.userId }
@@ -39,9 +36,37 @@ class ProjectControllerTests {
         Assertions.assertEquals(1, gotProject.participants.size)
     }
 
+    @Test
+    fun createAddParticipant_ParticipantAdded() {
+        val owner = createUser("ulyana")
+        val user = createUser("anya")
+        val project = createProject(owner)
+
+        var gotProject = projectController.getProject(project.projectId)
+        Assertions.assertNotNull(gotProject)
+
+        projectController.addParticipant(
+            gotProject!!.getId(),
+            user.userId
+        )
+
+        gotProject = projectController.getProject(gotProject.getId())
+
+        val userInProject = gotProject!!.participants.firstOrNull() { it == user.userId }
+
+        Assertions.assertNotNull(userInProject)
+        Assertions.assertEquals(user.userId, userInProject!!)
+        Assertions.assertEquals(2, gotProject.participants.size)
+    }
+
+    private fun createProject(owner: UserCreatedEvent) = projectController.createProject(
+        "theBestProject",
+        owner.userId
+    )
+
     private fun createUser(name: String): UserCreatedEvent {
         return userController.createUser(
-            "$name",
+            name,
             name,
             "12345678"
         )

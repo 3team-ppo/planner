@@ -3,10 +3,12 @@ package ru.quipy.controller
 import org.springframework.web.bind.annotation.*
 import ru.quipy.api.StatusAggregate
 import ru.quipy.api.StatusCreatedEvent
+import ru.quipy.api.StatusDeletedEvent
 import ru.quipy.api.StatusUpdatedEvent
 import ru.quipy.core.EventSourcingService
 import ru.quipy.logic.StatusAggregateState
 import ru.quipy.logic.createStatus
+import ru.quipy.logic.deleteStatus
 import ru.quipy.logic.updateStatus
 import java.util.*
 
@@ -39,6 +41,13 @@ class StatusController(
     ): StatusUpdatedEvent {
         return statusService.update(statusId) {
             it.updateStatus(newStatusName, newColor, projectId)
+        }
+    }
+
+    @DeleteMapping("/{statusId}")
+    fun deleteStatus(@PathVariable statusId: UUID): StatusDeletedEvent {
+        return statusService.update(statusId) {
+            it.deleteStatus()
         }
     }
 }

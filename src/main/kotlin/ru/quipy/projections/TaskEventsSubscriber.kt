@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import ru.quipy.api.TaskAggregate
-import ru.quipy.api.TaskCreatedEvent
 import ru.quipy.api.TaskStatusChangedEvent
 import ru.quipy.api.TaskAssignedToUserEvent
 import ru.quipy.api.TaskCompletedEvent
