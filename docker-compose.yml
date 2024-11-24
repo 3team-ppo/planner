@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - ${POSTGRES_DB_PORT}:${POSTGRES_DB_PORT}
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     restart: unless-stopped
 
   kotlin-app:
@@ -24,7 +24,21 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_HOST: event_sourcing_db
-      POSTGRES_PORT: ${POSTGRES_DB_PORT}
+      POSTGRES_PORT: ${POSTGRES_PORT}
     ports:
       - "8080:8080"
     restart: unless-stopped
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: event_sourcing_db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    command: ["mvn", "test"]
