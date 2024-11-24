@@ -7,7 +7,6 @@ import ru.quipy.logic.TaskAggregateState
 import ru.quipy.logic.updateTask
 import ru.quipy.logic.changeTaskStatus
 import ru.quipy.logic.assignTaskToUser
-import ru.quipy.logic.completeTask
 import java.util.*
 
 @RestController
@@ -21,7 +20,6 @@ class TaskController(
         @PathVariable taskId: UUID,
         @RequestParam projectId: UUID,
         @RequestParam newTaskName: String,
-        @RequestParam newStatusId: UUID,
         @RequestParam newPriority: Int,
         @RequestParam newEstimatedTime: Int,
         @RequestParam newAssigneeIds: List<UUID>
@@ -30,7 +28,6 @@ class TaskController(
             it.updateTask(
                 projectId,
                 newTaskName,
-                newStatusId,
                 newPriority,
                 newEstimatedTime,
                 newAssigneeIds
@@ -57,16 +54,6 @@ class TaskController(
     ): TaskAssignedToUserEvent {
         return taskEsService.update(taskId) {
             it.assignTaskToUser(assigneeId, projectId)
-        }
-    }
-
-    @PostMapping("/{taskId}/complete")
-    fun completeTask(
-        @PathVariable taskId: UUID,
-        @RequestParam projectId: UUID
-    ): TaskCompletedEvent {
-        return taskEsService.update(taskId) {
-            it.completeTask(projectId)
         }
     }
 

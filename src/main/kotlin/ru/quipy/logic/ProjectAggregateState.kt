@@ -80,6 +80,12 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
         participants.add(element = event.userId)
         updatedAt = event.createdAt
     }
+
+    @StateTransitionFunc
+    fun taskStatusChangedApply(event: TaskStatusChangedEvent) {
+        tasks[event.taskId]!!.statusId = event.newStatusId
+        updatedAt = event.createdAt
+    }
 }
 
 data class Task(

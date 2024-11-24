@@ -13,7 +13,6 @@ class TaskUpdatedEvent(
     val taskId: UUID,
     val projectId: UUID,
     val newTaskName: String,
-    val newStatusId: UUID,
     val newPriority: Int,
     val newEstimatedTime: Int,
     val newAssigneeIds: List<UUID>,

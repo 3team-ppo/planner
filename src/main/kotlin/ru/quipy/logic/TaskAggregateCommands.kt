@@ -6,7 +6,6 @@ import java.util.*
 fun TaskAggregateState.updateTask(
     projectId: UUID,
     newTaskName: String,
-    newStatusId: UUID,
     newPriority: Int,
     newEstimatedTime: Int,
     newAssigneeIds: List<UUID>
@@ -15,7 +14,6 @@ fun TaskAggregateState.updateTask(
         taskId = this.getId(),
         projectId = projectId,
         newTaskName = newTaskName,
-        newStatusId = newStatusId,
         newPriority = newPriority,
         newEstimatedTime = newEstimatedTime,
         newAssigneeIds = newAssigneeIds,

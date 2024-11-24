@@ -33,7 +33,6 @@ class TaskAggregateState : AggregateState<UUID, TaskAggregate> {
     @StateTransitionFunc
     fun taskUpdatedApply(event: TaskUpdatedEvent) {
         taskName = event.newTaskName
-        statusId = event.newStatusId
         priority = event.newPriority
         estimatedTime = event.newEstimatedTime
         assigneeIds = event.newAssigneeIds.toMutableList()
