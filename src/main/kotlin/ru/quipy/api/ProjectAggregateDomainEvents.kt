@@ -63,17 +63,6 @@ class StatusDeletedEvent(
     createdAt = createdAt,
 )
 
-@DomainEvent(name = STATUS_ASSIGNED_TO_TASK_EVENT_)
-class StatusAssignedToTaskEvent(
-    val projectId: UUID,
-    val taskId: UUID,
-    val statusId: UUID,
-    createdAt: Long = System.currentTimeMillis(),
-) : Event<ProjectAggregate>(
-    name = STATUS_ASSIGNED_TO_TASK_EVENT_,
-    createdAt = createdAt
-)
-
 @DomainEvent(name = TASK_CREATED_EVENT)
 class TaskCreatedEvent(
     val projectId: UUID,

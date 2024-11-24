@@ -63,11 +63,11 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     }
 
     @StateTransitionFunc
-    fun statusAssignedToTaskEventApply(event: StatusAssignedToTaskEvent) {
-        if (projectStatuses[event.statusId]!!.isDelete) {
+    fun statusAssignedToTaskEventApply(event: TaskStatusChangedEvent) {
+        if (projectStatuses[event.newStatusId]!!.isDelete) {
             throw IllegalStateException("Status is deleted")
         }
-        tasks[event.taskId]!!.statusId = event.statusId
+        tasks[event.taskId]!!.statusId = event.newStatusId
         updatedAt = event.createdAt
     }
 

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController
 import ru.quipy.api.ParticipantAddedEvent
 import ru.quipy.api.ProjectAggregate
 import ru.quipy.api.ProjectCreatedEvent
-import ru.quipy.api.StatusAssignedToTaskEvent
 import ru.quipy.api.StatusCreatedEvent
 import ru.quipy.api.StatusDeletedEvent
 import ru.quipy.api.StatusUpdatedEvent
@@ -22,7 +21,6 @@ import ru.quipy.logic.ProjectAggregateState
 import ru.quipy.logic.UserAggregateState
 import ru.quipy.logic.addParticipantById
 import ru.quipy.logic.addTask
-import ru.quipy.logic.assignStatusToTask
 import ru.quipy.logic.create
 import ru.quipy.logic.createStatus
 import ru.quipy.logic.deleteStatus
@@ -75,17 +73,6 @@ class ProjectController(
     ): StatusDeletedEvent {
         return projectEsService.update(projectId) {
             it.deleteStatus(statusId)
-        }
-    }
-
-    @PostMapping("/{projectId}/{taskId}/assignStatus")
-    fun assignStatus(
-        @PathVariable taskId: UUID,
-        @PathVariable projectId: UUID,
-        @RequestParam newStatusId: UUID
-    ): StatusAssignedToTaskEvent {
-        return projectEsService.update(projectId) {
-            it.assignStatusToTask(taskId, newStatusId)
         }
     }
 

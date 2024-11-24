@@ -2,7 +2,6 @@ package ru.quipy.logic
 
 import ru.quipy.api.ParticipantAddedEvent
 import ru.quipy.api.ProjectCreatedEvent
-import ru.quipy.api.StatusAssignedToTaskEvent
 import ru.quipy.api.StatusCreatedEvent
 import ru.quipy.api.StatusDeletedEvent
 import ru.quipy.api.StatusUpdatedEvent
@@ -59,18 +58,6 @@ fun ProjectAggregateState.deleteStatus(statusId: UUID): StatusDeletedEvent {
         projectId = this.getId(),
         statusId = statusId
     )
-}
-
-fun ProjectAggregateState.assignStatusToTask(taskId: UUID, statusId: UUID, ): StatusAssignedToTaskEvent {
-    if (!projectStatuses.containsKey(statusId)) {
-        throw IllegalArgumentException("Status doesn't exists: $statusId")
-    }
-
-    if (!tasks.containsKey(taskId)) {
-        throw IllegalArgumentException("Task doesn't exists: $taskId")
-    }
-
-    return StatusAssignedToTaskEvent(projectId = this.getId(), taskId = taskId, statusId = statusId)
 }
 
 fun ProjectAggregateState.addTask(taskName: String, creatorId: UUID): TaskCreatedEvent {
