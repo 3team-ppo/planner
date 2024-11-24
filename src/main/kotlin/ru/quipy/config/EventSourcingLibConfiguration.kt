@@ -46,9 +46,6 @@ class EventSourcingLibConfiguration {
     fun projectEsService() = eventSourcingServiceFactory.create<UUID, ProjectAggregate, ProjectAggregateState>()
 
     @Bean
-    fun statusEsService() = eventSourcingServiceFactory.create<UUID, StatusAggregate, StatusAggregateState>()
-
-    @Bean
     fun taskEsService() = eventSourcingServiceFactory.create<UUID, TaskAggregate, TaskAggregateState>()
 
     @Bean
@@ -57,8 +54,6 @@ class EventSourcingLibConfiguration {
     @PostConstruct
     fun init() {
         subscriptionsManager.subscribe<ProjectAggregate>(projectEventSubscriber)
-
-        subscriptionsManager.subscribe<StatusAggregate>(statusEventSubscriber)
 
         subscriptionsManager.subscribe<TaskAggregate>(taskEventSubscriber)
 

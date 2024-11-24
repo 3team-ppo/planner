@@ -10,50 +10,45 @@ class TaskAggregateState : AggregateState<UUID, TaskAggregate> {
     lateinit var taskName: String
     lateinit var projectId: UUID
     lateinit var statusId: UUID
+
     var priority: Int = 0
     var estimatedTime: Int = 0
     var assigneeIds: MutableList<UUID> = mutableListOf()
-    var createdDate: Long = System.currentTimeMillis()
-    var lastModifiedDate: Long = System.currentTimeMillis()
+    lateinit var creatorId: UUID
+
+    var createdAt: Long = System.currentTimeMillis()
+    var updatedAt: Long = System.currentTimeMillis()
 
     override fun getId() = taskId
 
     @StateTransitionFunc
+    fun taskCreatedApply(event: TaskCreatedEvent) {
+        taskId = event.taskId
+        taskName = event.taskName
+        projectId = event.projectId
+        statusId = event.defaultStatusId
+        updatedAt = event.createdAt
+    }
+
+    @StateTransitionFunc
     fun taskUpdatedApply(event: TaskUpdatedEvent) {
-        if (taskId != event.taskId) {
-            throw IllegalArgumentException("Task ID mismatch: ${event.taskId}")
-        }
         taskName = event.newTaskName
         statusId = event.newStatusId
         priority = event.newPriority
         estimatedTime = event.newEstimatedTime
         assigneeIds = event.newAssigneeIds.toMutableList()
-        lastModifiedDate = event.updatedAt
+        updatedAt = event.updatedAt
     }
 
     @StateTransitionFunc
     fun taskStatusChangedApply(event: TaskStatusChangedEvent) {
-        if (taskId != event.taskId) {
-            throw IllegalArgumentException("Task ID mismatch: ${event.taskId}")
-        }
         statusId = event.newStatusId
-        lastModifiedDate = event.createdAt
+        updatedAt = event.createdAt
     }
 
     @StateTransitionFunc
     fun taskAssignedToUserApply(event: TaskAssignedToUserEvent) {
-        if (taskId != event.taskId) {
-            throw IllegalArgumentException("Task ID mismatch: ${event.taskId}")
-        }
         assigneeIds.add(event.assigneeId)
-        lastModifiedDate = event.createdAt
-    }
-
-    @StateTransitionFunc
-    fun taskCompletedApply(event: TaskCompletedEvent) {
-        if (taskId != event.taskId) {
-            throw IllegalArgumentException("Task ID mismatch: ${event.taskId}")
-        }
-        lastModifiedDate = event.createdAt
+        updatedAt = event.createdAt
     }
 }

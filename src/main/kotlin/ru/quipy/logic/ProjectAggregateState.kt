@@ -5,40 +5,74 @@ import ru.quipy.core.annotations.StateTransitionFunc
 import ru.quipy.domain.AggregateState
 import java.util.*
 
-// Service's business logic
 class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     private lateinit var projectId: UUID
+    lateinit var projectTitle: String
+
+    lateinit var creatorId: UUID
+    var participants = mutableListOf<UUID>()
+
+    var tasks = mutableMapOf<UUID, Task>()
+
+    var projectStatuses = mutableMapOf<UUID, Status>()
+    lateinit var defaultStatus : Status
+
     var createdAt: Long = System.currentTimeMillis()
     var updatedAt: Long = System.currentTimeMillis()
 
-    lateinit var projectTitle: String
-    lateinit var creatorId: UUID
-    var tasks = mutableMapOf<UUID, TaskEntity>()
-    var participants = mutableListOf<UUID>()
-    var projectTags = mutableMapOf<UUID, TagEntity>()
 
     override fun getId() = projectId
 
-    // State transition functions which is represented by the class member function
     @StateTransitionFunc
     fun projectCreatedApply(event: ProjectCreatedEvent) {
-        projectId = event.projectId
+        projectId = UUID.randomUUID()
         projectTitle = event.title
+
         creatorId = event.creatorId
         participants.add(element = event.creatorId)
+
+        defaultStatus = Status(name = "CREATED", color = "BLUE")
+        projectStatuses[defaultStatus.id] = defaultStatus
+
+        val uncompletedStatus = Status(name = "UNCOMPLETED", color = "RED")
+        val completedStatus = Status(name = "COMPLETED", color = "GREEN")
+        projectStatuses[uncompletedStatus.id] = uncompletedStatus
+        projectStatuses[completedStatus.id] = completedStatus
+
         updatedAt = createdAt
     }
 
     @StateTransitionFunc
-    fun tagCreatedApply(event: TagCreatedEvent) {
-        projectTags[event.tagId] = TagEntity(event.tagId, event.tagName)
-        updatedAt = createdAt
+    fun statusCreatedApply(event: StatusCreatedEvent) {
+        projectStatuses[event.statusId] = Status(name = event.statusName, color = event.color)
+        updatedAt = event.createdAt
+    }
+
+    @StateTransitionFunc
+    fun statusUpdatedApply(event: StatusUpdatedEvent) {
+        projectStatuses[event.statusId] = Status(name = event.newStatusName, color = event.newColor)
+        updatedAt = event.createdAt
+    }
+
+    @StateTransitionFunc
+    fun statusDeletedApply(event: StatusDeletedEvent) {
+        projectStatuses[event.statusId]!!.isDelete = true
+        updatedAt = event.createdAt
+    }
+
+    @StateTransitionFunc
+    fun statusAssignedToTaskEventApply(event: StatusAssignedToTaskEvent) {
+        if (projectStatuses[event.statusId]!!.isDelete) {
+            throw IllegalStateException("Status is deleted")
+        }
+        tasks[event.taskId]!!.statusId = event.statusId
+        updatedAt = event.createdAt
     }
 
     @StateTransitionFunc
     fun taskCreatedApply(event: TaskCreatedEvent) {
-        tasks[event.taskId] = TaskEntity(event.taskId, event.taskName, mutableSetOf())
-        updatedAt = createdAt
+        tasks[event.taskId] = Task(event.taskId, event.taskName, defaultStatus.id)
+        updatedAt = event.createdAt
     }
 
     @StateTransitionFunc
@@ -48,24 +82,15 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     }
 }
 
-data class TaskEntity(
+data class Task(
     val id: UUID = UUID.randomUUID(),
     val name: String,
     var statusId: UUID,
-    val tagsAssigned: MutableSet<UUID>
 )
 
-data class TagEntity(
+data class Status(
     val id: UUID = UUID.randomUUID(),
-    val name: String
+    val name: String,
+    val color: String,
+    var isDelete: Boolean = false
 )
-
-/**
- * Demonstrates that the transition functions might be representer by "extension" functions, not only class members functions
- */
-@StateTransitionFunc
-fun ProjectAggregateState.tagAssignedApply(event: TagAssignedToTaskEvent) {
-    tasks[event.taskId]?.tagsAssigned?.add(event.tagId)
-        ?: throw IllegalArgumentException("No such task: ${event.taskId}")
-    updatedAt = createdAt
-}

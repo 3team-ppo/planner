@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
+import ru.quipy.api.ProjectCreatedEvent
 import ru.quipy.api.UserCreatedEvent
 import ru.quipy.controller.ProjectController
 import ru.quipy.controller.UserController
@@ -21,12 +22,12 @@ class ProjectControllerTests {
 
     @Test
     fun createProject_ProjectCreatedWithCorrectFieldsAndCreatedAsParticipant() {
-        val owner = createUser("ulyana")
-        val project = createProject(owner)
+        val owner: UserCreatedEvent = createUser("ulyana")
+        val project: ProjectCreatedEvent = createProject(owner)
         Assertions.assertEquals(1, project.version)
         Assertions.assertEquals("theBestProject", project.title)
 
-        val gotProject = projectController.getProject(project.projectId)
+        val gotProject = projectController.getProject(project.id)
         Assertions.assertNotNull(gotProject)
 
         val ownerInProject = gotProject!!.participants.firstOrNull() { it == owner.userId }
@@ -42,7 +43,7 @@ class ProjectControllerTests {
         val user = createUser("anya")
         val project = createProject(owner)
 
-        var gotProject = projectController.getProject(project.projectId)
+        var gotProject = projectController.getProject(project.id)
         Assertions.assertNotNull(gotProject)
 
         projectController.addParticipant(

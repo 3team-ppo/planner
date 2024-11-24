@@ -40,11 +40,3 @@ fun TaskAggregateState.assignTaskToUser(assigneeId: UUID, projectId: UUID): Task
         assignedAt = System.currentTimeMillis()
     )
 }
-
-fun TaskAggregateState.completeTask(projectId: UUID): TaskCompletedEvent {
-    return TaskCompletedEvent(
-        taskId = this.getId(),
-        projectId = projectId,
-        completedAt = System.currentTimeMillis()
-    )
-}

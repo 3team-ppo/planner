@@ -7,9 +7,7 @@ import java.util.*
 const val TASK_UPDATED_EVENT = "TASK_UPDATED_EVENT"
 const val TASK_STATUS_CHANGED_EVENT = "TASK_STATUS_CHANGED_EVENT"
 const val TASK_ASSIGNED_TO_USER_EVENT = "TASK_ASSIGNED_TO_USER_EVENT"
-const val TASK_COMPLETED_EVENT = "TASK_COMPLETED_EVENT"
 
-// API
 @DomainEvent(name = TASK_UPDATED_EVENT)
 class TaskUpdatedEvent(
     val taskId: UUID,
@@ -45,14 +43,4 @@ class TaskAssignedToUserEvent(
 ) : Event<TaskAggregate>(
     name = TASK_ASSIGNED_TO_USER_EVENT,
     createdAt = assignedAt,
-)
-
-@DomainEvent(name = TASK_COMPLETED_EVENT)
-class TaskCompletedEvent(
-    val taskId: UUID,
-    val projectId: UUID,
-    completedAt: Long = System.currentTimeMillis(),
-) : Event<TaskAggregate>(
-    name = TASK_COMPLETED_EVENT,
-    createdAt = completedAt,
 )

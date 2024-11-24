@@ -3,7 +3,6 @@ package ru.quipy.projections
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import ru.quipy.api.StatusAggregate
 import ru.quipy.api.StatusCreatedEvent
 import ru.quipy.api.StatusUpdatedEvent
 import ru.quipy.streams.annotation.AggregateSubscriber
