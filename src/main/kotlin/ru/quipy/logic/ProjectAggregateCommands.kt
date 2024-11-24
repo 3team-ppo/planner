@@ -6,6 +6,8 @@ import ru.quipy.api.StatusAssignedToTaskEvent
 import ru.quipy.api.StatusCreatedEvent
 import ru.quipy.api.StatusDeletedEvent
 import ru.quipy.api.StatusUpdatedEvent
+import ru.quipy.api.TagAssignedToTaskEvent
+import ru.quipy.api.TagCreatedEvent
 import ru.quipy.api.TaskCreatedEvent
 import java.util.UUID
 
@@ -87,4 +89,23 @@ fun ProjectAggregateState.addParticipantById(userId: UUID): ParticipantAddedEven
         throw IllegalArgumentException("User $userId is already a participant of the project ${getId()}.")
 
     return ParticipantAddedEvent(projectId = getId(), userId = userId)
+}
+
+fun ProjectAggregateState.createTag(name: String): TagCreatedEvent {
+    if (projectTags.values.any { it.name == name }) {
+        throw IllegalArgumentException("Tag already exists: $name")
+    }
+    return TagCreatedEvent(projectId = this.getId(), tagId = UUID.randomUUID(), tagName = name)
+}
+
+fun ProjectAggregateState.assignTagToTask(tagId: UUID, taskId: UUID): TagAssignedToTaskEvent {
+    if (!projectTags.containsKey(tagId)) {
+        throw IllegalArgumentException("Tag doesn't exists: $tagId")
+    }
+
+    if (!tasks.containsKey(taskId)) {
+        throw IllegalArgumentException("Task doesn't exists: $taskId")
+    }
+
+    return TagAssignedToTaskEvent(projectId = this.getId(), tagId = tagId, taskId = taskId)
 }

@@ -5,12 +5,14 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.TestPropertySource
 import ru.quipy.api.ProjectCreatedEvent
 import ru.quipy.api.UserCreatedEvent
 import ru.quipy.controller.ProjectController
 import ru.quipy.controller.UserController
 
 @SpringBootTest
+@TestPropertySource(locations = ["classpath:application.properties"])
 @ContextConfiguration(classes = [DemoApplication::class])
 class ProjectControllerTests {
 
