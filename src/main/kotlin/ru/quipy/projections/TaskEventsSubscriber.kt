@@ -5,13 +5,20 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import ru.quipy.api.TaskAggregate
-import ru.quipy.api.TaskStatusChangedEvent
 import ru.quipy.api.TaskAssignedToUserEvent
+import ru.quipy.api.TaskCreatedEvent
+import ru.quipy.api.TaskStatusChangedEvent
+import ru.quipy.api.TaskUpdatedEvent
+import ru.quipy.projections.entity.MongoTask
+import ru.quipy.projections.repository.TaskRepository
 import ru.quipy.streams.AggregateSubscriptionsManager
+import java.util.UUID
 import javax.annotation.PostConstruct
 
 @Service
-class TaskEventsSubscriber {
+class TaskEventsSubscriber(
+    private val taskRepository: TaskRepository
+) {
 
     val logger: Logger = LoggerFactory.getLogger(TaskEventsSubscriber::class.java)
 
@@ -22,16 +29,100 @@ class TaskEventsSubscriber {
     fun init() {
         subscriptionsManager.createSubscriber(TaskAggregate::class, "task-events-subscriber") {
 
+            `when`(TaskUpdatedEvent::class) { event ->
+                updateTaskProject(
+                    event.projectId,
+                    event.taskId,
+                    event.newTaskName,
+                    event.newPriority,
+                    event.newEstimatedTime,
+                    event.newAssigneeIds
+                    )
+            }
+
             `when`(TaskStatusChangedEvent::class) { event ->
-                logger.info("Task status changed: Task ID {} in project {} to new status {}",
-                    event.taskId, event.projectId, event.newStatusId)
+                updateStatusTaskProject(event.projectId, event.taskId, event.newStatusId)
             }
 
             `when`(TaskAssignedToUserEvent::class) { event ->
-                logger.info("Task assigned to user: Task ID {} in project {} assigned to user {}",
-                    event.taskId, event.projectId, event.assigneeId)
+                updateAssigneeTaskProject(event.projectId, event.taskId, event.assigneeId)
             }
 
         }
+    }
+
+    fun createTaskProject(
+        projectId: UUID,
+        taskId: UUID,
+        taskName: String,
+        defaultStatusId: UUID,
+        creatorId: UUID
+    ) {
+        val task = MongoTask(
+            taskId = taskId,
+            projectId = projectId,
+            taskName = taskName,
+            statusId = defaultStatusId,
+            creatorId = creatorId
+        )
+
+        taskRepository.save(task)
+    }
+
+    private fun updateTaskProject(
+        projectId: UUID,
+        taskId: UUID,
+        taskName: String,
+        newPriority: Int,
+        newEstimatedTime: Int,
+        newAssigneeIds: List<UUID>
+    ) {
+        val actualTask: MongoTask = taskRepository.findById(taskId).get()
+
+        val task = actualTask.copy(
+            taskId = taskId,
+            projectId = projectId,
+            taskName = taskName,
+            priority = newPriority,
+            estimatedTime = newEstimatedTime,
+            assigneeIds = newAssigneeIds
+        )
+
+        taskRepository.deleteById(task.taskId)
+        taskRepository.save(task)
+    }
+
+    private fun updateStatusTaskProject(
+        projectId: UUID,
+        taskId: UUID,
+        newStatusId: UUID
+    ) {
+        val actualTask: MongoTask = taskRepository.findById(taskId).get()
+
+        val task = actualTask.copy(
+            taskId = taskId,
+            projectId = projectId,
+            statusId = newStatusId
+        )
+
+        taskRepository.deleteById(task.taskId)
+        taskRepository.save(task)
+    }
+
+    private fun updateAssigneeTaskProject(
+        projectId: UUID,
+        taskId: UUID,
+        userId: UUID
+    ) {
+        val actualTask: MongoTask = taskRepository.findById(taskId).get()
+
+        val task = actualTask.copy(
+            taskId = taskId,
+            projectId = projectId,
+            assigneeIds = actualTask.assigneeIds + userId
+        )
+
+        taskRepository.deleteById(task.taskId)
+        taskRepository.save(task)
     }
 }

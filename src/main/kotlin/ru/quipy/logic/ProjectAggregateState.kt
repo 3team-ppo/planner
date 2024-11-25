@@ -27,13 +27,13 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
 
     @StateTransitionFunc
     fun projectCreatedApply(event: ProjectCreatedEvent) {
-        projectId = UUID.randomUUID()
+        projectId = event.projectId
         projectTitle = event.title
 
         creatorId = event.creatorId
         participants.add(element = event.creatorId)
 
-        defaultStatus = Status(name = "CREATED", color = "BLUE")
+        defaultStatus = Status(id = event.defaultStatusId, name = "CREATED", color = "BLUE")
         projectStatuses[defaultStatus.id] = defaultStatus
 
         val uncompletedStatus = Status(name = "UNCOMPLETED", color = "RED")

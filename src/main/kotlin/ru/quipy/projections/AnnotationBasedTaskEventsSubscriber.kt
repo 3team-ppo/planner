@@ -15,20 +15,29 @@ import ru.quipy.streams.annotation.SubscribeEvent
 @AggregateSubscriber(
     aggregateClass = TaskAggregate::class, subscriberName = "task-subs-stream"
 )
-class AnnotationBasedTaskEventsSubscriber {
+class AnnotationBasedTaskEventsSubscriber(
+    private val taskEventsSubscriber: TaskEventsSubscriber
+) {
 
     val logger: Logger = LoggerFactory.getLogger(AnnotationBasedTaskEventsSubscriber::class.java)
 
     @SubscribeEvent
     fun taskCreatedSubscriber(event: TaskCreatedEvent) {
         logger.info("Task created: {} for project {}", event.taskName, event.projectId)
+        taskEventsSubscriber.createTaskProject(
+            event.projectId,
+            event.taskId,
+            event.taskName,
+            event.defaultStatusId,
+            event.creatorId
+        )
     }
 
-    // @SubscribeEvent
-    // fun taskUpdatedSubscriber(event: TaskUpdatedEvent) {
-    //     logger.info("Task updated: {} for project {} with new name {} and new status {}",
-    //         event.taskId, event.projectId, event.newTaskName, event.newStatusId)
-    // }
+    @SubscribeEvent
+    fun taskUpdatedSubscriber(event: TaskUpdatedEvent) {
+        logger.info("Task updated: {} for project {} with new name {}",
+            event.taskId, event.projectId, event.newTaskName)
+    }
 
     @SubscribeEvent
     fun taskStatusChangedSubscriber(event: TaskStatusChangedEvent) {
@@ -42,9 +51,4 @@ class AnnotationBasedTaskEventsSubscriber {
             event.taskId, event.projectId, event.assigneeId)
     }
 
-    // @SubscribeEvent
-    // fun taskCompletedSubscriber(event: TaskCompletedEvent) {
-    //     logger.info("Task completed: {} for project {}",
-    //         event.taskId, event.projectId)
-    // }
 }

@@ -7,11 +7,17 @@ import org.springframework.stereotype.Service
 import ru.quipy.api.UserAggregate
 import ru.quipy.api.UserCreatedEvent
 import ru.quipy.api.UserUpdatedEvent
+import ru.quipy.projections.entity.Project
+import ru.quipy.projections.entity.User
+import ru.quipy.projections.repository.UserRepository
 import ru.quipy.streams.AggregateSubscriptionsManager
+import java.util.UUID
 import javax.annotation.PostConstruct
 
 @Service
-class UserEventsSubscriber {
+class UserEventsSubscriber(
+    private val userRepository: UserRepository
+) {
 
     val logger: Logger = LoggerFactory.getLogger(UserEventsSubscriber::class.java)
 
@@ -23,12 +29,36 @@ class UserEventsSubscriber {
         subscriptionsManager.createSubscriber(UserAggregate::class, "user-events-subscriber") {
 
             `when`(UserCreatedEvent::class) { event ->
-                logger.info("User created: ID {} with name {} and login {}", event.userId, event.userName, event.login)
+                createUser(event.userId, event.userName, event.login, event.password)
             }
 
             `when`(UserUpdatedEvent::class) { event ->
-                logger.info("User updated: ID {} with new name {} and login {}", event.userId, event.newName, event.newLogin)
+                updateUser(event.userId, event.newName, event.newLogin, event.newPassword)
             }
         }
+    }
+
+    private fun updateUser(userId: UUID, newName: String, newLogin: String, newPassword: String) {
+        val actualUser = userRepository.findById(userId).get()
+
+        val user = actualUser.copy(
+            userName = newName,
+            login = newLogin,
+            password = newPassword
+        )
+
+        userRepository.deleteById(userId)
+        userRepository.save(user)
+    }
+
+    private fun createUser(userId: UUID, userName: String, login: String, password: String) {
+        val user = User(
+            userId = userId,
+            userName = userName,
+            login = login,
+            password = password
+        )
+
+        userRepository.save(user)
     }
 }

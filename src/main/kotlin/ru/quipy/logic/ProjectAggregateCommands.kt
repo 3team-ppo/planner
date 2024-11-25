@@ -12,8 +12,10 @@ import java.util.UUID
 
 fun ProjectAggregateState.create(title: String, creatorId: UUID): ProjectCreatedEvent {
     return ProjectCreatedEvent(
+        projectId = UUID.randomUUID(),
         title = title,
         creatorId = creatorId,
+        defaultStatusId = UUID.randomUUID()
     )
 }
 
