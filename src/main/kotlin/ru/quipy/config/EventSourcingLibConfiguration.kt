@@ -40,19 +40,6 @@ class EventSourcingLibConfiguration {
      * ```
      */
 
-    @Autowired
-    private lateinit var aggregateRegistry: AggregateRegistry
-
-    @PostConstruct
-    fun registerAggregates() {
-        aggregateRegistry.register(ProjectAggregate::class, ProjectAggregateState::class) {
-            registerStateTransition(TagCreatedEvent::class, ProjectAggregateState::tagCreatedApply)
-            registerStateTransition(TaskCreatedEvent::class, ProjectAggregateState::taskCreatedApply)
-            registerStateTransition(TagAssignedToTaskEvent::class, ProjectAggregateState::tagAssignedApply)
-        }
-    }
-
-
     private val logger = LoggerFactory.getLogger(EventSourcingLibConfiguration::class.java)
 
     @Autowired
