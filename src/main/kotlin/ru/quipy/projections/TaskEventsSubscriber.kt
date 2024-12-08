@@ -29,6 +29,16 @@ class TaskEventsSubscriber(
     fun init() {
         subscriptionsManager.createSubscriber(TaskAggregate::class, "task-events-subscriber") {
 
+            `when`(TaskCreatedEvent::class) { event ->
+                createTaskProject(
+                    event.projectId,
+                    event.taskId,
+                    event.taskName,
+                    event.defaultStatusId,
+                    event.creatorId
+                )
+            }
+
             `when`(TaskUpdatedEvent::class) { event ->
                 updateTaskProject(
                     event.projectId,

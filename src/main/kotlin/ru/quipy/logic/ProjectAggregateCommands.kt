@@ -7,7 +7,7 @@ import ru.quipy.api.StatusDeletedEvent
 import ru.quipy.api.StatusUpdatedEvent
 import ru.quipy.api.TagAssignedToTaskEvent
 import ru.quipy.api.TagCreatedEvent
-import ru.quipy.api.TaskCreatedEvent
+import ru.quipy.api.TaskAddedEvent
 import java.util.UUID
 
 fun ProjectAggregateState.create(title: String, creatorId: UUID): ProjectCreatedEvent {
@@ -62,8 +62,8 @@ fun ProjectAggregateState.deleteStatus(statusId: UUID): StatusDeletedEvent {
     )
 }
 
-fun ProjectAggregateState.addTask(taskName: String, creatorId: UUID): TaskCreatedEvent {
-    return TaskCreatedEvent(
+fun ProjectAggregateState.addTask(taskName: String, creatorId: UUID): TaskAddedEvent {
+    return TaskAddedEvent(
         projectId = this.getId(),
         taskId = UUID.randomUUID(),
         taskName = taskName,

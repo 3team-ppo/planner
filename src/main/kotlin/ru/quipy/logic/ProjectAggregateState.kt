@@ -72,7 +72,7 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     }
 
     @StateTransitionFunc
-    fun taskCreatedApply(event: TaskCreatedEvent) {
+    fun taskCreatedApply(event: TaskAddedEvent) {
         tasks[event.taskId] = Task(event.taskId, event.taskName, defaultStatus.id)
         updatedAt = event.createdAt
     }

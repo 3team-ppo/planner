@@ -3,6 +3,7 @@ package ru.quipy
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
@@ -29,7 +30,7 @@ class ProjectControllerTests {
         Assertions.assertEquals(1, project.version)
         Assertions.assertEquals("theBestProject", project.title)
 
-        val gotProject = projectController.getProject(project.id)
+        val gotProject = projectController.getProject(project.projectId)
         Assertions.assertNotNull(gotProject)
 
         val ownerInProject = gotProject!!.participants.firstOrNull() { it == owner.userId }
@@ -45,7 +46,7 @@ class ProjectControllerTests {
         val user = createUser("anya")
         val project = createProject(owner)
 
-        var gotProject = projectController.getProject(project.id)
+        var gotProject = projectController.getProject(project.projectId)
         Assertions.assertNotNull(gotProject)
 
         projectController.addParticipant(

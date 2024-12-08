@@ -38,3 +38,13 @@ fun TaskAggregateState.assignTaskToUser(assigneeId: UUID, projectId: UUID): Task
         assignedAt = System.currentTimeMillis()
     )
 }
+
+fun TaskAggregateState.create(projectId: UUID, taskId: UUID, taskName: String, creatorId: UUID, defaultStatus: UUID): TaskCreatedEvent {
+    return TaskCreatedEvent(
+        projectId = projectId,
+        taskId = taskId,
+        taskName = taskName,
+        defaultStatusId = defaultStatus,
+        creatorId = creatorId
+    )
+}

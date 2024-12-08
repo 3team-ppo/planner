@@ -14,10 +14,13 @@ import ru.quipy.api.ProjectCreatedEvent
 import ru.quipy.api.StatusCreatedEvent
 import ru.quipy.api.StatusDeletedEvent
 import ru.quipy.api.StatusUpdatedEvent
+import ru.quipy.api.TaskAddedEvent
+import ru.quipy.api.TaskAggregate
 import ru.quipy.api.TaskCreatedEvent
 import ru.quipy.api.UserAggregate
 import ru.quipy.core.EventSourcingService
 import ru.quipy.logic.ProjectAggregateState
+import ru.quipy.logic.TaskAggregateState
 import ru.quipy.logic.UserAggregateState
 import ru.quipy.logic.addParticipantById
 import ru.quipy.logic.addTask
@@ -31,8 +34,8 @@ import java.util.*
 @RequestMapping("/projects")
 class ProjectController(
     val projectEsService: EventSourcingService<UUID, ProjectAggregate, ProjectAggregateState>,
-    val userEsService: EventSourcingService<UUID, UserAggregate, UserAggregateState>
-
+    val userEsService: EventSourcingService<UUID, UserAggregate, UserAggregateState>,
+    val taskEsService: EventSourcingService<UUID, TaskAggregate, TaskAggregateState>
 ) {
 
     @PostMapping("/{projectTitle}")
@@ -82,8 +85,11 @@ class ProjectController(
         @PathVariable taskName: String,
         @RequestParam creatorId: UUID
     ) : TaskCreatedEvent {
-        return projectEsService.update(projectId) {
+       val event = projectEsService.update(projectId) {
             it.addTask(taskName, creatorId)
+        }
+        return taskEsService.create {
+            it.create(projectId, event.taskId, event.taskName, creatorId, event.defaultStatusId)
         }
     }
 

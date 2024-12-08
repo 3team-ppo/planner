@@ -8,6 +8,19 @@ const val TASK_UPDATED_EVENT = "TASK_UPDATED_EVENT"
 const val TASK_STATUS_CHANGED_EVENT = "TASK_STATUS_CHANGED_EVENT"
 const val TASK_ASSIGNED_TO_USER_EVENT = "TASK_ASSIGNED_TO_USER_EVENT"
 
+@DomainEvent(name = TASK_CREATED_EVENT)
+class TaskCreatedEvent(
+    val projectId: UUID,
+    val taskId: UUID,
+    val taskName: String,
+    val defaultStatusId: UUID,
+    val creatorId: UUID,
+    createdAt: Long = System.currentTimeMillis(),
+) : Event<TaskAggregate> (
+    name = TASK_CREATED_EVENT,
+    createdAt = createdAt
+)
+
 @DomainEvent(name = TASK_UPDATED_EVENT)
 class TaskUpdatedEvent(
     val taskId: UUID,

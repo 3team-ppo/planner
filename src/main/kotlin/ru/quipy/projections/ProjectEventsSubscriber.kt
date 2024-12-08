@@ -11,18 +11,21 @@ import ru.quipy.api.StatusCreatedEvent
 import ru.quipy.api.StatusDeletedEvent
 import ru.quipy.api.StatusUpdatedEvent
 import ru.quipy.api.TagCreatedEvent
+import ru.quipy.api.TaskAddedEvent
 import ru.quipy.api.TaskCreatedEvent
+import ru.quipy.projections.entity.MongoTask
 import ru.quipy.projections.entity.Project
 import ru.quipy.projections.entity.Status
 import ru.quipy.projections.entity.Task
 import ru.quipy.projections.repository.ProjectRepository
+import ru.quipy.projections.repository.TaskRepository
 import ru.quipy.streams.AggregateSubscriptionsManager
 import java.util.UUID
 import javax.annotation.PostConstruct
 
 @Service
 class ProjectEventsSubscriber(
-    private val projectRepository: ProjectRepository,
+    private val projectRepository: ProjectRepository
 ) {
 
     val logger: Logger = LoggerFactory.getLogger(ProjectEventsSubscriber::class.java)
@@ -49,8 +52,8 @@ class ProjectEventsSubscriber(
                 deleteStatusProject(event.projectId, event.statusId)
             }
 
-            `when`(TaskCreatedEvent::class) { event ->
-                createTaskProject(event.projectId, event.taskId, event.taskName, event.defaultStatusId)
+            `when`(TaskAddedEvent::class) { event ->
+                createTaskProject(event.projectId, event.taskId, event.taskName, event.defaultStatusId, event.creatorId)
             }
 
             `when`(TagCreatedEvent::class) { event ->
@@ -123,7 +126,7 @@ class ProjectEventsSubscriber(
         projectRepository.save(project)
     }
 
-    private fun createTaskProject(projectId: UUID, taskId: UUID, name: String, defaultStatusId: UUID) {
+    private fun createTaskProject(projectId: UUID, taskId: UUID, name: String, defaultStatusId: UUID, creatorId: UUID) {
         val task = Task(taskId, name, defaultStatusId)
         val actualProject: Project = projectRepository.findById(projectId).get()
         val project = actualProject.copy(
