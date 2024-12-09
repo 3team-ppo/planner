@@ -10,8 +10,21 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - ${POSTGRES_DB_PORT}:${POSTGRES_DB_PORT}
+      - 35432:${POSTGRES_PORT}
     restart: unless-stopped
+    command: postgres -c listen_addresses='*'
+
+  mongo:
+    ports:
+      - '27017:27017'
+    restart: always
+    logging:
+      options:
+        max-size: 1g
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    image: mongo
 
   kotlin-app:
     build:
@@ -19,12 +32,13 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - postgres
+      - mongo
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_HOST: event_sourcing_db
-      POSTGRES_PORT: ${POSTGRES_DB_PORT}
+      POSTGRES_PORT: ${POSTGRES_PORT}
     ports:
       - "8080:8080"
     restart: unless-stopped
